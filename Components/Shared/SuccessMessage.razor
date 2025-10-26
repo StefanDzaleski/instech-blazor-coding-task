@@ -1,0 +1,17 @@
+@* Component for displaying the success message when all vessels are in anchorage *@
+
+@if (IsVisible)
+{
+    <div style="padding: 20px; margin: 20px;">
+        <p>@Message</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string Message { get; set; } = "All vessels are successfully placed in the anchorage!";
+}
+

@@ -1,0 +1,15 @@
+@* Component for the page header with title and Try Again button *@
+
+<div class="page-header">
+    <h1 style="display: inline-block">@Title</h1> 
+    <button @onclick="OnTryAgainClick">Try again</button>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Bin packing problem";
+
+    [Parameter]
+    public EventCallback OnTryAgainClick { get; set; }
+}
+

@@ -1,0 +1,26 @@
+@using instech_blazor_coding_task.Models
+
+@* Component for rendering an individual vessel *@
+
+<div class="vessel" style="position: absolute; 
+    left: @(Vessel.PositionX)px; 
+    top: @(Vessel.PositionY)px; 
+    width: @(Vessel.Width)px; 
+    height: @(Vessel.Height)px; 
+    background-color: red"
+    @onmousedown="OnMouseDown"
+    @onmouseup="OnMouseUp"
+    @onmousedown:preventDefault>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Vessel Vessel { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseDown { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
+}
+

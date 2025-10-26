@@ -9,34 +9,29 @@
 
 <PageTitle>Bin packing problem</PageTitle>
 
-@* The OnDragMove method ypdates the position of the element being dragged relative to the page.
+@* The OnDragMove method updates the position of the element being dragged relative to the page.
 Therefore the first element has to handle it. *@
 <div @onmousemove="OnDragMove">
-<div><h1 style="display: inline-block">Bin packing problem</h1> <button @onclick="GenerateNewVessels">Try again</button></div>
+    <PageHeader OnTryAgainClick="GenerateNewVessels" />
 
-@if (Vessels == null) {
-    <div>Loading</div>
-} else {
-    <div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none; box-sizing: content-box;">
-    </div>
-    @foreach (var ship in Vessels) {
-        <div class="vessel" style="position: absolute; 
-            left: @(ship.PositionX)px; 
-            top: @(ship.PositionY)px; 
-            width: @(ship.Width)px; 
-            height: @(ship.Height)px; 
-            background-color: red"
-            @onmousedown="@(e => OnDragStart(ship, e))"
-            @onmouseup="@(e => OnDragEnd(Vessels))"
-            @onmousedown:preventDefault>
-        </div>
+    @if (Vessels == null)
+    {
+        <div>Loading...</div>
     }
-    @if (anchorageFull) {
-        <div style="padding: 20px; margin: 20px;">
-            <p>All vessels are successfully placed in the anchorage!</p>
-        </div>
+    else
+    {
+        <AnchorageBox Width="anchorageWidth" Height="anchorageHeight" />
+        
+        @foreach (var vessel in Vessels)
+        {
+            <VesselItem 
+                Vessel="vessel" 
+                OnMouseDown="@(e => OnDragStart(vessel, e))"
+                OnMouseUp="@(e => OnDragEnd(Vessels))" />
+        }
+        
+        <SuccessMessage IsVisible="anchorageFull" />
     }
-}
 </div>
 
 @code {
@@ -137,7 +132,7 @@ private void OnDragEnd(IEnumerable<Vessel> allVessels) {
 
 private bool AllVesselsInAnchorage(IEnumerable<Vessel> allVessels) {
     foreach(var vessel in allVessels) {
-        if (!PositionService.IsInAnchorage(vessel, new Anchorage {Width = 500, Height = 500})) {
+        if (!PositionService.IsInAnchorage(vessel, new Anchorage {Width = anchorageWidth, Height = anchorageHeight})) {
             return false;
         }
     }

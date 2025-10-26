@@ -25,7 +25,7 @@ public class Vessel
 public class Fleet
 {
     public SingleShipDimensions singleShipDimensions { get; set; } = new();
-    public string shipDesignation { get; set; }
+    public string? shipDesignation { get; set; }
 
     public int shipCount { get; set; }
 }

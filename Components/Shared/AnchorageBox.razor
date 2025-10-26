@@ -1,0 +1,18 @@
+@* Component for rendering the anchorage container *@
+
+<div class="anchorage" style="position: relative; 
+    width: @(Width)px; 
+    height: @(Height)px; 
+    border: 2px solid #aaa; 
+    user-select: none; 
+    box-sizing: content-box;">
+</div>
+
+@code {
+    [Parameter]
+    public double Width { get; set; } = 500;
+
+    [Parameter]
+    public double Height { get; set; } = 500;
+}
+
