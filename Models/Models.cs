@@ -21,3 +21,19 @@ public class Vessel
 
     public double Rotation { get; set; }
 }
+
+public class Fleet
+{
+    public SingleShipDimensions singleShipDimensions { get; set; } = new();
+    public string shipDesignation { get; set; }
+
+    public int shipCount { get; set; }
+}
+
+public class SingleShipDimensions
+{
+    public int width { get; set; }
+    public int height { get; set; }
+}
+
+public class ApiResponse { public Anchorage anchorageSize { get; set; } = new(); public List<Fleet> fleets { get; set; } = new(); }

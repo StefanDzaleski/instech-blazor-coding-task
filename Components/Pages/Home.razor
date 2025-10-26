@@ -2,23 +2,24 @@
 @rendermode InteractiveServer
 @using instech_blazor_coding_task.Models
 @using instech_blazor_coding_task.Services
-
+@using System.Text.Json;
 @inject IDragService DragService
 @inject IPositionService PositionService
+@inject IApiService ApiService
 
 <PageTitle>Bin packing problem</PageTitle>
 
 @* The OnDragMove method ypdates the position of the element being dragged relative to the page.
 Therefore the first element has to handle it. *@
 <div @onmousemove="OnDragMove">
-<h1>Bin packing problem</h1>
+<div><h1 style="display: inline-block">Bin packing problem</h1> <button @onclick="GenerateNewVessels">Try again</button></div>
 
-@if(Vessels == null) {
+@if (Vessels == null) {
     <div>Loading</div>
 } else {
-    <div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none">
+    <div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none; box-sizing: content-box;">
     </div>
-    @foreach(var ship in Vessels) {
+    @foreach (var ship in Vessels) {
         <div class="vessel" style="position: absolute; 
             left: @(ship.PositionX)px; 
             top: @(ship.PositionY)px; 
@@ -30,7 +31,7 @@ Therefore the first element has to handle it. *@
             @onmousedown:preventDefault>
         </div>
     }
-    @if(anchorageFull) {
+    @if (anchorageFull) {
         <div style="padding: 20px; margin: 20px;">
             <p>All vessels are successfully placed in the anchorage!</p>
         </div>
@@ -43,22 +44,83 @@ private double anchorageWidth = 500;
 
 private double anchorageHeight = 500;
 
-private List<Vessel>? Vessels;
-
-private double _grabOffsetX;
-private double _grabOffsetY;
-
-private Vessel? _activeItem;
+private List<Vessel>? Vessels = new List<Vessel>();
 
 private bool anchorageFull = false;
 
-protected override void OnInitialized() {
-    Vessels = new List<Vessel> {
-        new Vessel { PositionX = 600, PositionY = 100, Height = 60, Width = 80 },
-        new Vessel { PositionX = 600, PositionY = 200, Height = 60, Width = 80 },
-        new Vessel { PositionX = 600, PositionY = 300, Height = 60, Width = 80 },
-    };
-}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVesselsFromApi();
+    }
+
+    private async Task LoadVesselsFromApi()
+    {
+        try
+        {
+            var response = await ApiService.GetRandomFleetAsync();
+
+            if (response == null)
+            {
+                Console.WriteLine("Failed to fetch fleet data");
+                return;
+            }
+            
+            if (response.anchorageSize != null)
+            {
+                anchorageHeight = response.anchorageSize.Height * 20;
+                anchorageWidth = response.anchorageSize.Width * 20;
+            }
+
+            Vessels = new List<Vessel>();
+            
+            if (response.fleets != null)
+            {
+                const int numberOfColumns = 3;
+                const int columnSpacing = 20; // Spacing between columns
+                const int vesselSpacing = 10; // Spacing between vessels in a column
+                
+                // Track Y offset for each column
+                double[] columnYOffsets = new double[numberOfColumns];
+                int currentColumn = 0;
+                
+                // Calculate column width
+                double maxVesselWidth = 150; // Default width for column spacing
+                
+                foreach (var fleet in response.fleets)
+                {
+                    if (fleet?.singleShipDimensions != null)
+                    {
+                        for (int i = 0; i < fleet.shipCount; i++)
+                        {
+                            double vesselWidth = fleet.singleShipDimensions.width * 20;
+                            double vesselHeight = fleet.singleShipDimensions.height * 20;
+                            
+                            // Calculate X position based on current column
+                            double columnXPosition = anchorageWidth + 50 + (currentColumn * (maxVesselWidth + columnSpacing));
+                            
+                            Vessels.Add(new Vessel
+                            {
+                                Width = vesselWidth,
+                                Height = vesselHeight,
+                                PositionX = columnXPosition,
+                                PositionY = columnYOffsets[currentColumn]
+                            });
+                            
+                            // Update Y offset for this column
+                            columnYOffsets[currentColumn] += vesselHeight + vesselSpacing;
+                            
+                            // Move to next column
+                            currentColumn = (currentColumn + 1) % numberOfColumns;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error loading vessels: " + ex.Message);
+        }
+    }
 
 private void OnDragStart(Vessel vessel, MouseEventArgs e) {
     DragService.OnDragStart(vessel, e);
@@ -81,5 +143,11 @@ private bool AllVesselsInAnchorage(IEnumerable<Vessel> allVessels) {
     }
 
     return true;
+}
+
+private async Task GenerateNewVessels() {
+    anchorageFull = false;
+    Vessels = null;
+    await LoadVesselsFromApi();
 }
 }

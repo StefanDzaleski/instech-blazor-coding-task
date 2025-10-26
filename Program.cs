@@ -9,6 +9,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<IDragService, DragService>();
 builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://esa.instech.no/") });
+builder.Services.AddScoped<IApiService, ApiService>();
 
 var app = builder.Build();
 
