@@ -1,5 +1,64 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@using instech_blazor_coding_task.Models
+@using instech_blazor_coding_task.Services
+
+@inject IDragService DragService
+@inject IOverlapService OverlapService
 
 <PageTitle>Bin packing problem</PageTitle>
 
+@* The OnDragMove method ypdates the position of the element being dragged relative to the page.
+Therefore the first element has to handle it. *@
+<div @onmousemove="OnDragMove">
 <h1>Bin packing problem</h1>
+
+<div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none">
+</div>
+@foreach(var ship in Vessels) {
+    <div class="vessel" style="position: absolute; 
+        left: @(ship.PositionX)px; 
+        top: @(ship.PositionY)px; 
+        width: @(ship.Width)px; 
+        height: @(ship.Height)px; 
+        background-color: red"
+        @onmousedown="@(e => OnDragStart(ship, e))"
+        @onmouseup="@(e => OnDragEnd(Vessels))"
+        @onmousedown:preventDefault>
+    </div>
+}
+</div>
+
+@code {
+private double anchorageWidth = 500;
+
+private double anchorageHeight = 500;
+
+private List<Vessel>? Vessels;
+
+private double _grabOffsetX;
+private double _grabOffsetY;
+
+private Vessel? _activeItem;
+
+protected override void OnInitialized() {
+    Vessels = new List<Vessel> {
+        new Vessel { PositionX = 600, PositionY = 100, Height = 60, Width = 80 },
+        new Vessel { PositionX = 600, PositionY = 200, Height = 60, Width = 80 },
+        new Vessel { PositionX = 600, PositionY = 300, Height = 60, Width = 80 },
+    };
+}
+
+private void OnDragStart(Vessel vessel, MouseEventArgs e) {
+    DragService.OnDragStart(vessel, e);
+}
+
+private void OnDragMove(MouseEventArgs e) {
+    DragService.OnDragMove(e);
+}
+
+private void OnDragEnd(IEnumerable<Vessel> allVessels) {
+    DragService.OnDragEnd(allVessels, OverlapService);
+}
+
+}

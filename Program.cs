@@ -1,10 +1,14 @@
 using instech_blazor_coding_task.Components;
+using instech_blazor_coding_task.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<IDragService, DragService>();
+builder.Services.AddScoped<IOverlapService, OverlapService>();
 
 var app = builder.Build();
 
