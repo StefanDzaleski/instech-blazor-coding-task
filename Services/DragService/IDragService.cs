@@ -9,5 +9,5 @@ public interface IDragService
 
     void OnDragMove(MouseEventArgs e);
 
-    void OnDragEnd(IEnumerable<Vessel> allVessels, IOverlapService overlapService);
+    void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService PositionServiceService);
 }

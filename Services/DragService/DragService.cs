@@ -33,7 +33,7 @@ public class DragService : IDragService
         _draggedVessel.PositionY = e.ClientY - _dragOffsetY;
     }
 
-    public void OnDragEnd(IEnumerable<Vessel> allVessels, IOverlapService overlapService)
+    public void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService overlapService)
     {
         if (_draggedVessel == null) return;
 

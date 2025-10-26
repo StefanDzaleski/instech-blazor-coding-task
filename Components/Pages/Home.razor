@@ -4,7 +4,7 @@
 @using instech_blazor_coding_task.Services
 
 @inject IDragService DragService
-@inject IOverlapService OverlapService
+@inject IPositionService PositionService
 
 <PageTitle>Bin packing problem</PageTitle>
 
@@ -13,19 +13,28 @@ Therefore the first element has to handle it. *@
 <div @onmousemove="OnDragMove">
 <h1>Bin packing problem</h1>
 
-<div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none">
-</div>
-@foreach(var ship in Vessels) {
-    <div class="vessel" style="position: absolute; 
-        left: @(ship.PositionX)px; 
-        top: @(ship.PositionY)px; 
-        width: @(ship.Width)px; 
-        height: @(ship.Height)px; 
-        background-color: red"
-        @onmousedown="@(e => OnDragStart(ship, e))"
-        @onmouseup="@(e => OnDragEnd(Vessels))"
-        @onmousedown:preventDefault>
+@if(Vessels == null) {
+    <div>Loading</div>
+} else {
+    <div class="anchorage" style="position: relative; width: @(anchorageWidth)px; height: @(anchorageHeight)px; border: 2px solid #aaa; user-select: none">
     </div>
+    @foreach(var ship in Vessels) {
+        <div class="vessel" style="position: absolute; 
+            left: @(ship.PositionX)px; 
+            top: @(ship.PositionY)px; 
+            width: @(ship.Width)px; 
+            height: @(ship.Height)px; 
+            background-color: red"
+            @onmousedown="@(e => OnDragStart(ship, e))"
+            @onmouseup="@(e => OnDragEnd(Vessels))"
+            @onmousedown:preventDefault>
+        </div>
+    }
+    @if(anchorageFull) {
+        <div style="padding: 20px; margin: 20px;">
+            <p>All vessels are successfully placed in the anchorage!</p>
+        </div>
+    }
 }
 </div>
 
@@ -40,6 +49,8 @@ private double _grabOffsetX;
 private double _grabOffsetY;
 
 private Vessel? _activeItem;
+
+private bool anchorageFull = false;
 
 protected override void OnInitialized() {
     Vessels = new List<Vessel> {
@@ -58,7 +69,17 @@ private void OnDragMove(MouseEventArgs e) {
 }
 
 private void OnDragEnd(IEnumerable<Vessel> allVessels) {
-    DragService.OnDragEnd(allVessels, OverlapService);
+    DragService.OnDragEnd(allVessels, PositionService);
+    anchorageFull = AllVesselsInAnchorage(allVessels);
 }
 
+private bool AllVesselsInAnchorage(IEnumerable<Vessel> allVessels) {
+    foreach(var vessel in allVessels) {
+        if (!PositionService.IsInAnchorage(vessel, new Anchorage {Width = 500, Height = 500})) {
+            return false;
+        }
+    }
+
+    return true;
+}
 }
