@@ -5,6 +5,7 @@
 @using System.Text.Json;
 @inject IDragService DragService
 @inject IPositionService PositionService
+@inject IVesselLayoutService VesselLayoutService
 @inject IApiService ApiService
 
 <PageTitle>Bin packing problem</PageTitle>
@@ -60,56 +61,15 @@ private bool anchorageFull = false;
                 return;
             }
             
+            // Update anchorage dimensions from API
             if (response.anchorageSize != null)
             {
                 anchorageHeight = response.anchorageSize.Height * 20;
                 anchorageWidth = response.anchorageSize.Width * 20;
             }
 
-            Vessels = new List<Vessel>();
-            
-            if (response.fleets != null)
-            {
-                const int numberOfColumns = 3;
-                const int columnSpacing = 20; // Spacing between columns
-                const int vesselSpacing = 10; // Spacing between vessels in a column
-                
-                // Track Y offset for each column
-                double[] columnYOffsets = new double[numberOfColumns];
-                int currentColumn = 0;
-                
-                // Calculate column width
-                double maxVesselWidth = 150; // Default width for column spacing
-                
-                foreach (var fleet in response.fleets)
-                {
-                    if (fleet?.singleShipDimensions != null)
-                    {
-                        for (int i = 0; i < fleet.shipCount; i++)
-                        {
-                            double vesselWidth = fleet.singleShipDimensions.width * 20;
-                            double vesselHeight = fleet.singleShipDimensions.height * 20;
-                            
-                            // Calculate X position based on current column
-                            double columnXPosition = anchorageWidth + 50 + (currentColumn * (maxVesselWidth + columnSpacing));
-                            
-                            Vessels.Add(new Vessel
-                            {
-                                Width = vesselWidth,
-                                Height = vesselHeight,
-                                PositionX = columnXPosition,
-                                PositionY = columnYOffsets[currentColumn]
-                            });
-                            
-                            // Update Y offset for this column
-                            columnYOffsets[currentColumn] += vesselHeight + vesselSpacing;
-                            
-                            // Move to next column
-                            currentColumn = (currentColumn + 1) % numberOfColumns;
-                        }
-                    }
-                }
-            }
+            // Delegate vessel layout to the VesselLayoutService
+            Vessels = VesselLayoutService.GenerateVesselLayout(response.fleets, anchorageWidth);
         }
         catch (Exception ex)
         {
@@ -127,17 +87,9 @@ private void OnDragMove(MouseEventArgs e) {
 
 private void OnDragEnd(IEnumerable<Vessel> allVessels) {
     DragService.OnDragEnd(allVessels, PositionService);
-    anchorageFull = AllVesselsInAnchorage(allVessels);
-}
-
-private bool AllVesselsInAnchorage(IEnumerable<Vessel> allVessels) {
-    foreach(var vessel in allVessels) {
-        if (!PositionService.IsInAnchorage(vessel, new Anchorage {Width = anchorageWidth, Height = anchorageHeight})) {
-            return false;
-        }
-    }
-
-    return true;
+    
+    var anchorage = new Anchorage { Width = anchorageWidth, Height = anchorageHeight };
+    anchorageFull = PositionService.AllVesselsInAnchorage(allVessels, anchorage);
 }
 
 private async Task GenerateNewVessels() {
