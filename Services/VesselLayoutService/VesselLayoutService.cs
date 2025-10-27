@@ -10,17 +10,12 @@ public class VesselLayoutService : IVesselLayoutService
     /// <summary>
     /// Horizontal spacing between columns in pixels
     /// </summary>
-    private const int ColumnSpacing = 20;
+    private const int ColumnSpacing = 30;
     
     /// <summary>
     /// Vertical spacing between vessels in the same column in pixels
     /// </summary>
-    private const int VesselSpacing = 10;
-    
-    /// <summary>
-    /// Maximum width of a vessel in a column
-    /// </summary>
-    private const double MaxVesselWidth = 150;
+    private const int VesselSpacing = 20;
 
     /// <summary>
     /// Converts the fleets from the API to a list of vessels in multiple columns.
@@ -41,13 +36,37 @@ public class VesselLayoutService : IVesselLayoutService
         // Start vessels at the same Y position as the anchorage (below header)
         const double anchorageTopPosition = 162;
         
+        // First pass: calculate maximum width needed for each column
+        var columnMaxWidths = new double[numberOfColumns];
+        var currentColumn = 0;
+
+        foreach (var fleet in fleets)
+        {
+            for (var i = 0; i < fleet.ShipCount; i++)
+            {
+                var vesselWidth = fleet.SingleShipDimensions.Width * 20;
+                columnMaxWidths[currentColumn] = Math.Max(columnMaxWidths[currentColumn], vesselWidth);
+                currentColumn = (currentColumn + 1) % numberOfColumns;
+            }
+        }
+
+        // Calculate X position for each column based on cumulative widths
+        var columnXPositions = new double[numberOfColumns];
+        columnXPositions[0] = anchorageWidth + 50;
+        for (var i = 1; i < numberOfColumns; i++)
+        {
+            columnXPositions[i] = columnXPositions[i - 1] + columnMaxWidths[i - 1] + ColumnSpacing;
+        }
+
+        // Initialize Y offsets for each column
         var columnYOffsets = new double[numberOfColumns];
         for (var i = 0; i < numberOfColumns; i++)
         {
             columnYOffsets[i] = anchorageTopPosition;
         }
         
-        var currentColumn = 0;
+        // Second pass: position vessels
+        currentColumn = 0;
 
         foreach (var fleet in fleets)
         {
@@ -56,13 +75,11 @@ public class VesselLayoutService : IVesselLayoutService
                 var vesselWidth = fleet.SingleShipDimensions.Width * 20;
                 var vesselHeight = fleet.SingleShipDimensions.Height * 20;
 
-                var columnXPosition = anchorageWidth + 50 + currentColumn * (MaxVesselWidth + ColumnSpacing);
-
                 vessels.Add(new Vessel
                 {
                     Width = vesselWidth,
                     Height = vesselHeight,
-                    PositionX = columnXPosition,
+                    PositionX = columnXPositions[currentColumn],
                     PositionY = columnYOffsets[currentColumn],
                     ShipDesignation = fleet.ShipDesignation
                 });

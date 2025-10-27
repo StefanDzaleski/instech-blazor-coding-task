@@ -69,8 +69,8 @@ public class VesselLayoutServiceTests
 
         Assert.Equal(4, result.Count);
         Assert.Equal(550, result[0].PositionX);
-        Assert.Equal(720, result[1].PositionX);
-        Assert.Equal(890, result[2].PositionX);
+        Assert.Equal(680, result[1].PositionX);
+        Assert.Equal(810, result[2].PositionX);
         Assert.Equal(550, result[3].PositionX);
     }
 
@@ -90,7 +90,7 @@ public class VesselLayoutServiceTests
         var result = _layoutService.GenerateVesselLayout(fleets, anchorageWidth, 3);
 
         Assert.Equal(162, result[0].PositionY);
-        Assert.Equal(272, result[3].PositionY);
+        Assert.Equal(282, result[3].PositionY);
     }
 }
 
