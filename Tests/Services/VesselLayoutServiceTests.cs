@@ -89,8 +89,8 @@ public class VesselLayoutServiceTests
 
         var result = _layoutService.GenerateVesselLayout(fleets, anchorageWidth, 3);
 
-        Assert.Equal(0, result[0].PositionY);
-        Assert.Equal(110, result[3].PositionY);
+        Assert.Equal(162, result[0].PositionY);
+        Assert.Equal(272, result[3].PositionY);
     }
 }
 

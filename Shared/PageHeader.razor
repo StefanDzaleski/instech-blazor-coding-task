@@ -1,13 +1,20 @@
 @* Component for the page header with title and Try Again button *@
 
 <div class="page-header">
-    <h1 style="display: inline-block">@Title</h1> 
-    <button @onclick="OnTryAgainClick">Try again</button>
+    <div class="header-content">
+        <div class="header-left">
+            <h1>@Title</h1>
+            <p class="subtitle">Drag and drop vessels into the blue anchorage zone</p>
+        </div>
+        <button class="btn btn-light btn-lg try-again-btn" @onclick="OnTryAgainClick">
+            New Challenge
+        </button>
+    </div>
 </div>
 
 @code {
     [Parameter]
-    public string Title { get; set; } = "Bin packing problem";
+    public string Title { get; set; } = "Bin Packing Problem";
 
     [Parameter]
     public EventCallback OnTryAgainClick { get; set; }

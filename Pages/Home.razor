@@ -21,15 +21,39 @@ Therefore the first element has to handle it. *@
     }
     else
     {
-        <AnchorageBox Width="anchorageWidth" Height="anchorageHeight" />
-        
-        @foreach (var vessel in Vessels)
-        {
-            <VesselItem 
-                Vessel="vessel" 
-                OnMouseDown="@(e => OnDragStart(vessel, e))"
-                OnMouseUp="@(e => OnDragEnd(Vessels))" />
-        }
+        <div class="game-area">
+            <AnchorageBox Width="anchorageWidth" Height="anchorageHeight" />
+            
+            @foreach (var vessel in Vessels)
+            {
+                <VesselItem 
+                    Vessel="vessel" 
+                    OnMouseDown="@(e => OnDragStart(vessel, e))"
+                    OnMouseUp="@(e => OnDragEnd(Vessels))" />
+            }
+        </div>
+
+        <div class="instructions-card" style="width: @(anchorageWidth - 100)px;">
+            <div class="instructions-title">Instructions</div>
+            <ul class="instructions-list">
+                <li class="instruction-item">
+                    <span class="instruction-number">1</span>
+                    <span class="instruction-text">Click and hold on any vessel (pink rectangles) on the right</span>
+                </li>
+                <li class="instruction-item">
+                    <span class="instruction-number">2</span>
+                    <span class="instruction-text">Drag the vessel into the blue anchorage zone</span>
+                </li>
+                <li class="instruction-item">
+                    <span class="instruction-number">3</span>
+                    <span class="instruction-text">Vessels cannot overlap with each other</span>
+                </li>
+                <li class="instruction-item">
+                    <span class="instruction-number">4</span>
+                    <span class="instruction-text">Place all vessels completely inside the anchorage to win</span>
+                </li>
+            </ul>
+        </div>
         
         <SuccessMessage IsVisible="anchorageFull" />
     }

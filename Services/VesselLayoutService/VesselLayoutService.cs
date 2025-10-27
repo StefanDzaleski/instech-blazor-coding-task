@@ -38,7 +38,15 @@ public class VesselLayoutService : IVesselLayoutService
             return vessels;
         }
 
+        // Start vessels at the same Y position as the anchorage (below header)
+        const double anchorageTopPosition = 162;
+        
         double[] columnYOffsets = new double[numberOfColumns];
+        for (int i = 0; i < numberOfColumns; i++)
+        {
+            columnYOffsets[i] = anchorageTopPosition;
+        }
+        
         int currentColumn = 0;
 
         foreach (var fleet in fleets)

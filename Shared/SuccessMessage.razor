@@ -2,8 +2,12 @@
 
 @if (IsVisible)
 {
-    <div style="padding: 20px; margin: 20px;">
-        <p>@Message</p>
+    <div class="success-overlay">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Success!</h2>
+            <p class="success-text">@Message</p>
+        </div>
     </div>
 }
 
@@ -12,6 +16,6 @@
     public bool IsVisible { get; set; }
 
     [Parameter]
-    public string Message { get; set; } = "All vessels are successfully placed in the anchorage!";
+    public string Message { get; set; } = "All vessels have been successfully placed in the anchorage zone.";
 }
 
