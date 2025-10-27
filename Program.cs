@@ -12,13 +12,23 @@ builder.Services.AddScoped<IPositionService, PositionService>();
 builder.Services.AddScoped<IVesselLayoutService, VesselLayoutService>();
 builder.Services.AddScoped<IRotationService, RotationService>();
 builder.Services.AddScoped<IVesselTrackingService, VesselTrackingService>();
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://esa.instech.no/") });
-builder.Services.AddScoped<IApiService, ApiService>();
+
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] 
+    ?? throw new InvalidOperationException("ApiSettings:BaseUrl is not configured");
+
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
