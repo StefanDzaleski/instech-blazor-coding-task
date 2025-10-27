@@ -8,6 +8,41 @@ namespace instech_blazor_coding_task.Services;
 public class PositionService : IPositionService
 {
     /// <summary>
+    /// Gets the effective width of a vessel based on its rotation
+    /// </summary>
+    private double GetEffectiveWidth(Vessel vessel)
+    {
+        return (vessel.Rotation == 90 || vessel.Rotation == 270) ? vessel.Height : vessel.Width;
+    }
+
+    /// <summary>
+    /// Gets the effective height of a vessel based on its rotation
+    /// </summary>
+    private double GetEffectiveHeight(Vessel vessel)
+    {
+        return (vessel.Rotation == 90 || vessel.Rotation == 270) ? vessel.Width : vessel.Height;
+    }
+
+    /// <summary>
+    /// Gets the actual bounding box position after accounting for rotation around center
+    /// </summary>
+    private (double x, double y, double width, double height) GetBoundingBox(Vessel vessel)
+    {
+        var effectiveWidth = GetEffectiveWidth(vessel);
+        var effectiveHeight = GetEffectiveHeight(vessel);
+        
+        // Calculate the center of the original box
+        var centerX = vessel.PositionX + vessel.Width / 2;
+        var centerY = vessel.PositionY + vessel.Height / 2;
+        
+        // Calculate the new top-left position based on effective dimensions
+        var newX = centerX - effectiveWidth / 2;
+        var newY = centerY - effectiveHeight / 2;
+        
+        return (newX, newY, effectiveWidth, effectiveHeight);
+    }
+
+    /// <summary>
     /// Checks if the selected vessel overlaps with any other vessels
     /// </summary>
     /// <param name="selectedVessel">The vessel to check for overlaps</param>
@@ -17,12 +52,16 @@ public class PositionService : IPositionService
     {
         if (selectedVessel == null || allVessels == null) return false;
 
+        var (selectedX, selectedY, selectedWidth, selectedHeight) = GetBoundingBox(selectedVessel);
+
         foreach (var vessel in allVessels)
         {
             if (vessel == selectedVessel) continue;
 
-            bool overlapX = selectedVessel.PositionX < vessel.PositionX + vessel.Width && selectedVessel.PositionX + selectedVessel.Width > vessel.PositionX;
-            bool overlapY = selectedVessel.PositionY < vessel.PositionY + vessel.Height && selectedVessel.PositionY + selectedVessel.Height > vessel.PositionY;
+            var (vesselX, vesselY, vesselWidth, vesselHeight) = GetBoundingBox(vessel);
+
+            bool overlapX = selectedX < vesselX + vesselWidth && selectedX + selectedWidth > vesselX;
+            bool overlapY = selectedY < vesselY + vesselHeight && selectedY + selectedHeight > vesselY;
 
             if (overlapX && overlapY)
             {
@@ -49,12 +88,14 @@ public class PositionService : IPositionService
         if (selectedVessel == null || anchorage == null) return false;
 
         var anchorageTopLeftPositionX = 32;
-        var anchorageTopLeftPositionY = 82;
+        var anchorageTopLeftPositionY = 162;
 
-        bool leftEdgeInside = selectedVessel.PositionX >= anchorageTopLeftPositionX;
-        bool rightEdgeInside = selectedVessel.PositionX + selectedVessel.Width <= anchorageTopLeftPositionX + anchorage.Width;
-        bool topEdgeInside = selectedVessel.PositionY >= anchorageTopLeftPositionY;
-        bool bottomEdgeInside = selectedVessel.PositionY + selectedVessel.Height <= anchorageTopLeftPositionY + anchorage.Height;
+        var (vesselX, vesselY, vesselWidth, vesselHeight) = GetBoundingBox(selectedVessel);
+
+        bool leftEdgeInside = vesselX >= anchorageTopLeftPositionX;
+        bool rightEdgeInside = vesselX + vesselWidth <= anchorageTopLeftPositionX + anchorage.Width;
+        bool topEdgeInside = vesselY >= anchorageTopLeftPositionY;
+        bool bottomEdgeInside = vesselY + vesselHeight <= anchorageTopLeftPositionY + anchorage.Height;
 
         return leftEdgeInside && rightEdgeInside && topEdgeInside && bottomEdgeInside;
     }

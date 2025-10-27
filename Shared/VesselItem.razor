@@ -7,10 +7,15 @@
     top: @(Vessel.PositionY)px; 
     width: @(Vessel.Width)px; 
     height: @(Vessel.Height)px; 
+    transform: rotate(@(Vessel.Rotation)deg);
+    transform-origin: center center;
     background-color: red"
     @onmousedown="OnMouseDown"
     @onmouseup="OnMouseUp"
-    @onmousedown:preventDefault>
+    @ondblclick="OnDoubleClick"
+    @onmousedown:preventDefault
+    @ondblclick:preventDefault
+    @ondblclick:stopPropagation>
 </div>
 
 @code {
@@ -22,5 +27,8 @@
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnMouseUp { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnDoubleClick { get; set; }
 }
 

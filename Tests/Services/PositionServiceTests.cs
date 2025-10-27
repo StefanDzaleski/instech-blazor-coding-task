@@ -88,5 +88,28 @@ public class PositionServiceTests
 
         Assert.False(result);
     }
+
+    [Fact]
+    public void IsInAnchorage_ShouldHandleRotatedVessel()
+    {
+        var vessel = new Vessel { PositionX = 100, PositionY = 150, Width = 100, Height = 50, Rotation = 90 };
+        var anchorage = new Anchorage { Width = 500, Height = 500 };
+
+        var result = _positionService.IsInAnchorage(vessel, anchorage);
+
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void IsOverlapping_ShouldDetectOverlapWithRotatedVessels()
+    {
+        var vessel1 = new Vessel { PositionX = 100, PositionY = 100, Width = 100, Height = 50, Rotation = 0 };
+        var vessel2 = new Vessel { PositionX = 120, PositionY = 80, Width = 50, Height = 100, Rotation = 90 };
+        var vessels = new List<Vessel> { vessel1, vessel2 };
+
+        var result = _positionService.IsOverlapping(vessel1, vessels);
+
+        Assert.True(result);
+    }
 }
 

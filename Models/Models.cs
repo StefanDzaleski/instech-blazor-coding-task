@@ -36,4 +36,8 @@ public class SingleShipDimensions
     public int height { get; set; }
 }
 
-public class ApiResponse { public Anchorage anchorageSize { get; set; } = new(); public List<Fleet> fleets { get; set; } = new(); }
+public class ApiResponse
+{
+    public Anchorage anchorageSize { get; set; } = new(); 
+    public List<Fleet> fleets { get; set; } = new(); 
+}

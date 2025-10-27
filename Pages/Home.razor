@@ -6,6 +6,7 @@
 @inject IDragService DragService
 @inject IPositionService PositionService
 @inject IVesselLayoutService VesselLayoutService
+@inject IRotationService RotationService
 @inject IApiService ApiService
 
 <PageTitle>Bin packing problem</PageTitle>
@@ -29,7 +30,8 @@ Therefore the first element has to handle it. *@
                 <VesselItem 
                     Vessel="vessel" 
                     OnMouseDown="@(e => OnDragStart(vessel, e))"
-                    OnMouseUp="@(e => OnDragEnd(Vessels))" />
+                    OnMouseUp="@(e => OnDragEnd(Vessels))"
+                    OnDoubleClick="@(e => OnVesselDoubleClick(vessel))" />
             }
         </div>
 
@@ -46,10 +48,14 @@ Therefore the first element has to handle it. *@
                 </li>
                 <li class="instruction-item">
                     <span class="instruction-number">3</span>
-                    <span class="instruction-text">Vessels cannot overlap with each other</span>
+                    <span class="instruction-text">Double-click on a vessel to rotate it 90 degrees</span>
                 </li>
                 <li class="instruction-item">
                     <span class="instruction-number">4</span>
+                    <span class="instruction-text">Vessels cannot overlap with each other</span>
+                </li>
+                <li class="instruction-item">
+                    <span class="instruction-number">5</span>
                     <span class="instruction-text">Place all vessels completely inside the anchorage to win</span>
                 </li>
             </ul>
@@ -67,6 +73,9 @@ private double anchorageHeight = 500;
 private List<Vessel>? Vessels = new List<Vessel>();
 
 private bool anchorageFull = false;
+
+private DateTime _lastRotationTime = DateTime.MinValue;
+private const int RotationDebounceMs = 300;
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,5 +129,18 @@ private async Task GenerateNewVessels() {
     anchorageFull = false;
     Vessels = null;
     await LoadVesselsFromApi();
+}
+
+private void OnVesselDoubleClick(Vessel vessel) {
+    // Prevent multiple rotations in a short time period
+    var now = DateTime.Now;
+    if ((now - _lastRotationTime).TotalMilliseconds < RotationDebounceMs)
+    {
+        return;
+    }
+    
+    _lastRotationTime = now;
+    RotationService.RotateVessel(vessel);
+    StateHasChanged();
 }
 }

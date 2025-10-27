@@ -42,8 +42,12 @@ public class DragService : IDragService
         _draggedVessel.PreviousPositionX = _draggedVessel.PositionX;
         _draggedVessel.PreviousPositionY = _draggedVessel.PositionY;
 
-        _dragOffsetX = e.ClientX - vessel.PositionX;
-        _dragOffsetY = e.ClientY - vessel.PositionY;
+        // Calculate drag offset from the center to maintain consistency with rotation
+        var centerX = vessel.PositionX + vessel.Width / 2;
+        var centerY = vessel.PositionY + vessel.Height / 2;
+        
+        _dragOffsetX = e.ClientX - centerX;
+        _dragOffsetY = e.ClientY - centerY;
     }
 
     /// <summary>
@@ -54,14 +58,20 @@ public class DragService : IDragService
     /// <remarks>
     /// Position calculation: vessel position = cursor position - drag offset
     /// This maintains the relative grab point throughout the drag operation.
+    /// For rotated vessels, we calculate from center to maintain consistency.
     /// </remarks>
     public void OnDragMove(MouseEventArgs e)
     {
         if (_draggedVessel == null || e == null)
             return;
 
-        _draggedVessel.PositionX = e.ClientX - _dragOffsetX;
-        _draggedVessel.PositionY = e.ClientY - _dragOffsetY;
+        // Calculate new center position based on mouse
+        var newCenterX = e.ClientX - _dragOffsetX;
+        var newCenterY = e.ClientY - _dragOffsetY;
+        
+        // Convert back to top-left position
+        _draggedVessel.PositionX = newCenterX - _draggedVessel.Width / 2;
+        _draggedVessel.PositionY = newCenterY - _draggedVessel.Height / 2;
     }
 
     /// <summary>
