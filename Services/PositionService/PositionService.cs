@@ -8,25 +8,36 @@ namespace instech_blazor_coding_task.Services;
 public class PositionService : IPositionService
 {
     /// <summary>
+    /// Small epsilon value for floating-point comparisons to handle precision issues
+    /// </summary>
+    private const double Epsilon = 1e-9;
+
+    private const double LeftPadding = 32;
+    private const double TopPadding = 32;
+    private const double HeaderHeight = 106;
+    private const double HeaderMargin = 24;
+    /// <summary>
     /// Gets the effective width of a vessel based on its rotation
     /// </summary>
-    private double GetEffectiveWidth(Vessel vessel)
+    private static double GetEffectiveWidth(Vessel vessel)
     {
-        return (vessel.Rotation == 90 || vessel.Rotation == 270) ? vessel.Height : vessel.Width;
+        var rotationMod180 = vessel.Rotation % 180;
+        return Math.Abs(rotationMod180 - 90) < Epsilon ? vessel.Height : vessel.Width;
     }
 
     /// <summary>
     /// Gets the effective height of a vessel based on its rotation
     /// </summary>
-    private double GetEffectiveHeight(Vessel vessel)
+    private static double GetEffectiveHeight(Vessel vessel)
     {
-        return (vessel.Rotation == 90 || vessel.Rotation == 270) ? vessel.Width : vessel.Height;
+        var rotationMod180 = vessel.Rotation % 180;
+        return Math.Abs(rotationMod180 - 90) < Epsilon ? vessel.Width : vessel.Height;
     }
 
     /// <summary>
     /// Gets the actual bounding box position after accounting for rotation around center
     /// </summary>
-    private (double x, double y, double width, double height) GetBoundingBox(Vessel vessel)
+    private static (double x, double y, double width, double height) GetBoundingBox(Vessel vessel)
     {
         var effectiveWidth = GetEffectiveWidth(vessel);
         var effectiveHeight = GetEffectiveHeight(vessel);
@@ -50,8 +61,6 @@ public class PositionService : IPositionService
     /// <returns>True if the selected vessel overlaps with any other vesse, else false</returns>
     public bool IsOverlapping(Vessel selectedVessel, IEnumerable<Vessel> allVessels)
     {
-        if (selectedVessel == null || allVessels == null) return false;
-
         var (selectedX, selectedY, selectedWidth, selectedHeight) = GetBoundingBox(selectedVessel);
 
         foreach (var vessel in allVessels)
@@ -60,8 +69,8 @@ public class PositionService : IPositionService
 
             var (vesselX, vesselY, vesselWidth, vesselHeight) = GetBoundingBox(vessel);
 
-            bool overlapX = selectedX < vesselX + vesselWidth && selectedX + selectedWidth > vesselX;
-            bool overlapY = selectedY < vesselY + vesselHeight && selectedY + selectedHeight > vesselY;
+            var overlapX = selectedX < vesselX + vesselWidth + Epsilon && selectedX + selectedWidth > vesselX - Epsilon;
+            var overlapY = selectedY < vesselY + vesselHeight + Epsilon && selectedY + selectedHeight > vesselY - Epsilon;
 
             if (overlapX && overlapY)
             {
@@ -78,20 +87,17 @@ public class PositionService : IPositionService
     /// <param name="selectedVessel">The vessel to check</param>
     /// <param name="anchorage">The anchorage dimensions</param>
     /// <returns>True if the vessel is fully inside the anchorage, else false</returns>
-    /// </remarks>
     public bool IsInAnchorage(Vessel selectedVessel, Anchorage anchorage)
     {
-        if (selectedVessel == null || anchorage == null) return false;
-
-        var anchorageTopLeftPositionX = 32;
-        var anchorageTopLeftPositionY = 162;
+        const double anchorageTopLeftPositionX = LeftPadding;
+        const double anchorageTopLeftPositionY = TopPadding + HeaderHeight + HeaderMargin; // Amounts to 162px
 
         var (vesselX, vesselY, vesselWidth, vesselHeight) = GetBoundingBox(selectedVessel);
 
-        bool leftEdgeInside = vesselX >= anchorageTopLeftPositionX;
-        bool rightEdgeInside = vesselX + vesselWidth <= anchorageTopLeftPositionX + anchorage.Width;
-        bool topEdgeInside = vesselY >= anchorageTopLeftPositionY;
-        bool bottomEdgeInside = vesselY + vesselHeight <= anchorageTopLeftPositionY + anchorage.Height;
+        var leftEdgeInside = vesselX >= anchorageTopLeftPositionX - Epsilon;
+        var rightEdgeInside = vesselX + vesselWidth <= anchorageTopLeftPositionX + anchorage.Width + Epsilon;
+        var topEdgeInside = vesselY >= anchorageTopLeftPositionY - Epsilon;
+        var bottomEdgeInside = vesselY + vesselHeight <= anchorageTopLeftPositionY + anchorage.Height + Epsilon;
 
         return leftEdgeInside && rightEdgeInside && topEdgeInside && bottomEdgeInside;
     }
@@ -104,8 +110,6 @@ public class PositionService : IPositionService
     /// <returns>True if all vessels are fully inside the anchorage, else false</returns>
     public bool AllVesselsInAnchorage(IEnumerable<Vessel> allVessels, Anchorage anchorage)
     {
-        if (allVessels == null || anchorage == null) return false;
-
         foreach (var vessel in allVessels)
         {
             if (!IsInAnchorage(vessel, anchorage))

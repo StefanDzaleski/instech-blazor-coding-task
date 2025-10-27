@@ -28,6 +28,6 @@ public interface IDragService
     /// If the vessel overlaps with another, it snaps back to its previous position.
     /// </summary>
     /// <param name="allVessels">Collection of all vessels to check for overlaps</param>
-    /// <param name="PositionServiceService">Position service used for checking the overlaps</param>
-    void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService PositionServiceService);
+    /// <param name="positionService">Position service used for checking the overlaps</param>
+    void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService positionService);
 }

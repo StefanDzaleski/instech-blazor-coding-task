@@ -7,7 +7,7 @@ namespace instech_blazor_coding_task.Services;
 /// </summary>
 public class VesselTrackingService : IVesselTrackingService
 {
-    private Dictionary<string, (int placed, int total)> _trackingInfo = new();
+    private readonly Dictionary<string, (int placed, int total)> _trackingInfo = new();
 
     /// <summary>
     /// Initializes tracking based on fleet data.
@@ -16,14 +16,12 @@ public class VesselTrackingService : IVesselTrackingService
     public void Initialize(List<Fleet> fleets)
     {
         _trackingInfo.Clear();
-
-        if (fleets == null) return;
-
+        
         foreach (var fleet in fleets)
         {
-            if (fleet?.shipDesignation != null)
+            if (fleet.ShipDesignation != null)
             {
-                _trackingInfo[fleet.shipDesignation] = (0, fleet.shipCount);
+                _trackingInfo[fleet.ShipDesignation] = (0, fleet.ShipCount);
             }
         }
     }
@@ -34,9 +32,9 @@ public class VesselTrackingService : IVesselTrackingService
     /// <param name="allVessels">Collection of all vessels</param>
     /// <param name="anchorage">The anchorage dimensions</param>
     /// <param name="positionService">Service to check if vessels are in anchorage</param>
-    public void UpdateTracking(IEnumerable<Vessel> allVessels, Anchorage anchorage, IPositionService positionService)
+    public void UpdateTracking(IEnumerable<Vessel> allVessels, Anchorage? anchorage, IPositionService positionService)
     {
-        if (allVessels == null || anchorage == null || positionService == null) return;
+        if (anchorage == null) return;
 
         // Reset placed counts
         var keys = _trackingInfo.Keys.ToList();
@@ -49,13 +47,12 @@ public class VesselTrackingService : IVesselTrackingService
         // Count vessels in anchorage by designation
         foreach (var vessel in allVessels)
         {
-            if (vessel?.ShipDesignation != null && positionService.IsInAnchorage(vessel, anchorage))
+            if (vessel.ShipDesignation == null || !positionService.IsInAnchorage(vessel, anchorage))
+                continue;
+            if (_trackingInfo.ContainsKey(vessel.ShipDesignation))
             {
-                if (_trackingInfo.ContainsKey(vessel.ShipDesignation))
-                {
-                    var (placed, total) = _trackingInfo[vessel.ShipDesignation];
-                    _trackingInfo[vessel.ShipDesignation] = (placed + 1, total);
-                }
+                var (placed, total) = _trackingInfo[vessel.ShipDesignation];
+                _trackingInfo[vessel.ShipDesignation] = (placed + 1, total);
             }
         }
     }

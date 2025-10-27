@@ -2,7 +2,6 @@
 @rendermode InteractiveServer
 @using instech_blazor_coding_task.Models
 @using instech_blazor_coding_task.Services
-@using System.Text.Json;
 @inject IDragService DragService
 @inject IPositionService PositionService
 @inject IVesselLayoutService VesselLayoutService
@@ -17,26 +16,26 @@ Therefore the first element has to handle it. *@
 <div @onmousemove="OnDragMove">
     <PageHeader OnTryAgainClick="GenerateNewVessels" />
 
-    @if (Vessels == null)
+    @if (_vessels == null)
     {
         <div>Loading...</div>
     }
     else
     {
         <div class="game-area">
-            <AnchorageBox Width="anchorageWidth" Height="anchorageHeight" />
+            <AnchorageBox Width="_anchorageWidth" Height="_anchorageHeight" />
             
-            @foreach (var vessel in Vessels)
+            @foreach (var vessel in _vessels)
             {
                 <VesselItem 
                     Vessel="vessel" 
                     OnMouseDown="@(e => OnDragStart(vessel, e))"
-                    OnMouseUp="@(e => OnDragEnd(Vessels))"
-                    OnDoubleClick="@(e => OnVesselDoubleClick(vessel))" />
+                    OnMouseUp="@(() => OnDragEnd(_vessels))"
+                    OnDoubleClick="@(() => OnVesselDoubleClick(vessel))" />
             }
         </div>
 
-        <div class="instructions-card" style="width: @(anchorageWidth - 100)px;">
+        <div class="instructions-card" style="width: @(_anchorageWidth - 100)px;">
             <div class="instructions-title">Instructions</div>
             <ul class="instructions-list">
                 <li class="instruction-item">
@@ -45,7 +44,7 @@ Therefore the first element has to handle it. *@
                 </li>
                 <li class="instruction-item">
                     <span class="instruction-number">2</span>
-                    <span class="instruction-text">Drag the vessel into the blue anchorage zone</span>
+                    <span class="instruction-text">Drag the vessel into the blue anchorage</span>
                 </li>
                 <li class="instruction-item">
                     <span class="instruction-number">3</span>
@@ -59,23 +58,27 @@ Therefore the first element has to handle it. *@
                     <span class="instruction-number">5</span>
                     <span class="instruction-text">Place all vessels completely inside the anchorage to win</span>
                 </li>
+                <li class="instruction-item">
+                    <span class="instruction-number">6</span>
+                    <span class="instruction-text">Some combinations of vessels might not fit into the anchorage in any combination. In that case try again</span>
+                </li>
             </ul>
         </div>
         
         <VesselTracker TrackingInfo="VesselTrackingService.GetTrackingInfo()" />
         
-        <SuccessMessage IsVisible="anchorageFull" />
+        <SuccessMessage IsVisible="_anchorageFull" />
     }
 </div>
 
 @code {
-private double anchorageWidth = 500;
+private double _anchorageWidth = 500;
 
-private double anchorageHeight = 500;
+private double _anchorageHeight = 500;
 
-private List<Vessel>? Vessels = new List<Vessel>();
+private List<Vessel>? _vessels = [];
 
-private bool anchorageFull = false;
+private bool _anchorageFull = false;
 
 private DateTime _lastRotationTime = DateTime.MinValue;
 private const int RotationDebounceMs = 300;
@@ -98,17 +101,17 @@ private const int RotationDebounceMs = 300;
             }
             
             // Update anchorage dimensions from API
-            if (response.anchorageSize != null)
+            if (response.AnchorageSize != null)
             {
-                anchorageHeight = response.anchorageSize.Height * 20;
-                anchorageWidth = response.anchorageSize.Width * 20;
+                _anchorageHeight = response.AnchorageSize.Height * 20;
+                _anchorageWidth = response.AnchorageSize.Width * 20;
             }
 
             // Delegate vessel layout to the VesselLayoutService
-            Vessels = VesselLayoutService.GenerateVesselLayout(response.fleets, anchorageWidth);
+            _vessels = VesselLayoutService.GenerateVesselLayout(response.Fleets, _anchorageWidth);
             
             // Initialize vessel tracking
-            VesselTrackingService.Initialize(response.fleets);
+            VesselTrackingService.Initialize(response.Fleets);
             UpdateTracking();
         }
         catch (Exception ex)
@@ -128,20 +131,20 @@ private void OnDragMove(MouseEventArgs e) {
 private void OnDragEnd(IEnumerable<Vessel> allVessels) {
     DragService.OnDragEnd(allVessels, PositionService);
     
-    var anchorage = new Anchorage { Width = anchorageWidth, Height = anchorageHeight };
-    anchorageFull = PositionService.AllVesselsInAnchorage(allVessels, anchorage);
+    var anchorage = new Anchorage { Width = _anchorageWidth, Height = _anchorageHeight };
+    _anchorageFull = PositionService.AllVesselsInAnchorage(allVessels, anchorage);
     
     UpdateTracking();
 }
 
 private void UpdateTracking() {
-    var anchorage = new Anchorage { Width = anchorageWidth, Height = anchorageHeight };
-    VesselTrackingService.UpdateTracking(Vessels ?? new List<Vessel>(), anchorage, PositionService);
+    var anchorage = new Anchorage { Width = _anchorageWidth, Height = _anchorageHeight };
+    VesselTrackingService.UpdateTracking(_vessels ?? [], anchorage, PositionService);
 }
 
 private async Task GenerateNewVessels() {
-    anchorageFull = false;
-    Vessels = null;
+    _anchorageFull = false;
+    _vessels = null;
     await LoadVesselsFromApi();
 }
 

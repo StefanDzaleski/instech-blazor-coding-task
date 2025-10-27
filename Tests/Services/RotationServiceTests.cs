@@ -37,9 +37,9 @@ public class RotationServiceTests
     }
 
     [Fact]
-    public void RotateVessel_ShouldHandleNullVessel()
+    public void RotateVessel_ShouldThrowArgumentNullException_WhenVesselIsNull()
     {
-        _rotationService.RotateVessel(null!);
+        Assert.Throws<ArgumentNullException>(() => _rotationService.RotateVessel(null!));
     }
 }
 

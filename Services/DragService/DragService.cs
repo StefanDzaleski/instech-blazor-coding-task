@@ -34,8 +34,6 @@ public class DragService : IDragService
     /// <param name="e">Mouse event args containing cursor position at drag start</param>
     public void OnDragStart(Vessel vessel, MouseEventArgs e)
     {
-        if (vessel == null || e == null) return;
-
         _draggedVessel = vessel;
 
         // Save the position of the vessel, so that if it can't be moved somewhere it snaps back into the previous position
@@ -62,7 +60,7 @@ public class DragService : IDragService
     /// </remarks>
     public void OnDragMove(MouseEventArgs e)
     {
-        if (_draggedVessel == null || e == null)
+        if (_draggedVessel == null)
             return;
 
         // Calculate new center position based on mouse
@@ -79,12 +77,12 @@ public class DragService : IDragService
 
     /// </summary>
     /// <param name="allVessels">Collection of all vessels to check for overlaps</param>
-    /// <param name="overlapService">Position service used to check the overlaps</param>
-    public void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService overlapService)
+    /// <param name="positionService">Position service used to check the overlaps</param>
+    public void OnDragEnd(IEnumerable<Vessel> allVessels, IPositionService positionService)
     {
         if (_draggedVessel == null) return;
 
-        if (overlapService.IsOverlapping(_draggedVessel, allVessels)) {
+        if (positionService.IsOverlapping(_draggedVessel, allVessels)) {
             _draggedVessel.PositionX = _draggedVessel.PreviousPositionX;
             _draggedVessel.PositionY = _draggedVessel.PreviousPositionY;
         }

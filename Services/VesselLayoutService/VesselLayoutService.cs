@@ -33,7 +33,7 @@ public class VesselLayoutService : IVesselLayoutService
     {
         var vessels = new List<Vessel>();
         
-        if (fleets == null || fleets.Count == 0)
+        if (fleets.Count == 0)
         {
             return vessels;
         }
@@ -41,27 +41,22 @@ public class VesselLayoutService : IVesselLayoutService
         // Start vessels at the same Y position as the anchorage (below header)
         const double anchorageTopPosition = 162;
         
-        double[] columnYOffsets = new double[numberOfColumns];
-        for (int i = 0; i < numberOfColumns; i++)
+        var columnYOffsets = new double[numberOfColumns];
+        for (var i = 0; i < numberOfColumns; i++)
         {
             columnYOffsets[i] = anchorageTopPosition;
         }
         
-        int currentColumn = 0;
+        var currentColumn = 0;
 
         foreach (var fleet in fleets)
         {
-            if (fleet?.singleShipDimensions == null)
+            for (var i = 0; i < fleet.ShipCount; i++)
             {
-                continue;
-            }
+                var vesselWidth = fleet.SingleShipDimensions.Width * 20;
+                var vesselHeight = fleet.SingleShipDimensions.Height * 20;
 
-            for (int i = 0; i < fleet.shipCount; i++)
-            {
-                double vesselWidth = fleet.singleShipDimensions.width * 20;
-                double vesselHeight = fleet.singleShipDimensions.height * 20;
-
-                double columnXPosition = anchorageWidth + 50 + (currentColumn * (MaxVesselWidth + ColumnSpacing));
+                var columnXPosition = anchorageWidth + 50 + currentColumn * (MaxVesselWidth + ColumnSpacing);
 
                 vessels.Add(new Vessel
                 {
@@ -69,7 +64,7 @@ public class VesselLayoutService : IVesselLayoutService
                     Height = vesselHeight,
                     PositionX = columnXPosition,
                     PositionY = columnYOffsets[currentColumn],
-                    ShipDesignation = fleet.shipDesignation
+                    ShipDesignation = fleet.ShipDesignation
                 });
 
                 columnYOffsets[currentColumn] += vesselHeight + VesselSpacing;

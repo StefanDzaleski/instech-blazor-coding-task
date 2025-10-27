@@ -34,14 +34,14 @@ public class ApiServiceTests
     {
         var expectedResponse = new ApiResponse
         {
-            anchorageSize = new Anchorage { Width = 25, Height = 25 },
-            fleets = new List<Fleet>
+            AnchorageSize = new Anchorage { Width = 25, Height = 25 },
+            Fleets = new List<Fleet>
             {
                 new Fleet
                 {
-                    shipDesignation = "Carrier",
-                    shipCount = 1,
-                    singleShipDimensions = new SingleShipDimensions { width = 5, height = 5 }
+                    ShipDesignation = "Carrier",
+                    ShipCount = 1,
+                    SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 5 }
                 }
             }
         };
@@ -58,10 +58,10 @@ public class ApiServiceTests
         var result = await apiService.GetRandomFleetAsync();
 
         Assert.NotNull(result);
-        Assert.Equal(25, result.anchorageSize.Width);
-        Assert.Equal(25, result.anchorageSize.Height);
-        Assert.Single(result.fleets);
-        Assert.Equal("Carrier", result.fleets[0].shipDesignation);
+        Assert.Equal(25, result.AnchorageSize.Width);
+        Assert.Equal(25, result.AnchorageSize.Height);
+        Assert.Single(result.Fleets);
+        Assert.Equal("Carrier", result.Fleets[0].ShipDesignation);
     }
 
     [Fact]
@@ -85,11 +85,11 @@ public class ApiServiceTests
     {
         var expectedResponse = new ApiResponse
         {
-            anchorageSize = new Anchorage { Width = 30, Height = 30 },
-            fleets = new List<Fleet>
+            AnchorageSize = new Anchorage { Width = 30, Height = 30 },
+            Fleets = new List<Fleet>
             {
-                new Fleet { shipDesignation = "Carrier", shipCount = 1, singleShipDimensions = new SingleShipDimensions { width = 5, height = 5 } },
-                new Fleet { shipDesignation = "Battleship", shipCount = 2, singleShipDimensions = new SingleShipDimensions { width = 4, height = 4 } }
+                new Fleet { ShipDesignation = "Carrier", ShipCount = 1, SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 5 } },
+                new Fleet { ShipDesignation = "Battleship", ShipCount = 2, SingleShipDimensions = new SingleShipDimensions { Width = 4, Height = 4 } }
             }
         };
 
@@ -105,9 +105,9 @@ public class ApiServiceTests
         var result = await apiService.GetRandomFleetAsync();
 
         Assert.NotNull(result);
-        Assert.Equal(2, result.fleets.Count);
-        Assert.Equal("Carrier", result.fleets[0].shipDesignation);
-        Assert.Equal("Battleship", result.fleets[1].shipDesignation);
+        Assert.Equal(2, result.Fleets.Count);
+        Assert.Equal("Carrier", result.Fleets[0].ShipDesignation);
+        Assert.Equal("Battleship", result.Fleets[1].ShipDesignation);
     }
 }
 

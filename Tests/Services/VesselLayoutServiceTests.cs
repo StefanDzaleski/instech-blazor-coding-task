@@ -20,8 +20,8 @@ public class VesselLayoutServiceTests
         {
             new Fleet
             {
-                shipCount = 1,
-                singleShipDimensions = new SingleShipDimensions { width = 5, height = 10 }
+                ShipCount = 1,
+                SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 10 }
             }
         };
         double anchorageWidth = 500;
@@ -40,8 +40,8 @@ public class VesselLayoutServiceTests
         {
             new Fleet
             {
-                shipCount = 1,
-                singleShipDimensions = new SingleShipDimensions { width = 5, height = 5 }
+                ShipCount = 1,
+                SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 5 }
             }
         };
         double anchorageWidth = 500;
@@ -59,8 +59,8 @@ public class VesselLayoutServiceTests
         {
             new Fleet
             {
-                shipCount = 4,
-                singleShipDimensions = new SingleShipDimensions { width = 5, height = 5 }
+                ShipCount = 4,
+                SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 5 }
             }
         };
         double anchorageWidth = 500;
@@ -81,8 +81,8 @@ public class VesselLayoutServiceTests
         {
             new Fleet
             {
-                shipCount = 4,
-                singleShipDimensions = new SingleShipDimensions { width = 5, height = 5 }
+                ShipCount = 4,
+                SingleShipDimensions = new SingleShipDimensions { Width = 5, Height = 5 }
             }
         };
         double anchorageWidth = 500;

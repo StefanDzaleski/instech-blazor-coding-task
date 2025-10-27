@@ -12,10 +12,10 @@ public class RotationService : IRotationService
     /// Updates the rotation angle only. Width and height represent the original dimensions.
     /// </summary>
     /// <param name="vessel">The vessel to rotate</param>
-    public void RotateVessel(Vessel vessel)
+    public void RotateVessel(Vessel? vessel)
     {
-        if (vessel == null) return;
-
+        ArgumentNullException.ThrowIfNull(vessel);
+        
         vessel.Rotation = (vessel.Rotation + 90) % 360;
     }
 }

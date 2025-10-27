@@ -2,14 +2,14 @@ namespace instech_blazor_coding_task.Models;
 
 public class Anchorage
 {
-    public double Width { get; set; }
-    public double Height { get; set; }
+    public double Width { get; init; }
+    public double Height { get; init; }
 }
 public class Vessel
 {
-    public double Width { get; set; }
+    public double Width { get; init; }
 
-    public double Height { get; set; }
+    public double Height { get; init; }
 
     public double PositionX { get; set; }
 
@@ -21,25 +21,25 @@ public class Vessel
 
     public double Rotation { get; set; }
 
-    public string? ShipDesignation { get; set; }
+    public string? ShipDesignation { get; init; }
 }
 
 public class Fleet
 {
-    public SingleShipDimensions singleShipDimensions { get; set; } = new();
-    public string? shipDesignation { get; set; }
+    public SingleShipDimensions SingleShipDimensions { get; set; } = new();
+    public string? ShipDesignation { get; set; }
 
-    public int shipCount { get; set; }
+    public int ShipCount { get; set; }
 }
 
 public class SingleShipDimensions
 {
-    public int width { get; set; }
-    public int height { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
 }
 
 public class ApiResponse
 {
-    public Anchorage anchorageSize { get; set; } = new(); 
-    public List<Fleet> fleets { get; set; } = new(); 
+    public Anchorage? AnchorageSize { get; init; } = new(); 
+    public List<Fleet> Fleets { get; init; } = []; 
 }
