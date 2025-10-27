@@ -40,7 +40,7 @@ public class PositionServiceTests
     [Fact]
     public void IsInAnchorage_ShouldReturnTrue_WhenVesselIsFullyInside()
     {
-        var vessel = new Vessel { PositionX = 50, PositionY = 100, Width = 50, Height = 50 };
+        var vessel = new Vessel { PositionX = 50, PositionY = 200, Width = 50, Height = 50 };
         var anchorage = new Anchorage { Width = 500, Height = 500 };
 
         var result = _positionService.IsInAnchorage(vessel, anchorage);
@@ -51,7 +51,7 @@ public class PositionServiceTests
     [Fact]
     public void IsInAnchorage_ShouldReturnFalse_WhenVesselIsOutsideBoundary()
     {
-        var vessel = new Vessel { PositionX = 600, PositionY = 100, Width = 50, Height = 50 };
+        var vessel = new Vessel { PositionX = 600, PositionY = 200, Width = 50, Height = 50 };
         var anchorage = new Anchorage { Width = 500, Height = 500 };
 
         var result = _positionService.IsInAnchorage(vessel, anchorage);
@@ -64,8 +64,8 @@ public class PositionServiceTests
     {
         var vessels = new List<Vessel>
         {
-            new Vessel { PositionX = 50, PositionY = 100, Width = 50, Height = 50 },
-            new Vessel { PositionX = 150, PositionY = 150, Width = 50, Height = 50 }
+            new Vessel { PositionX = 50, PositionY = 200, Width = 50, Height = 50 },
+            new Vessel { PositionX = 150, PositionY = 250, Width = 50, Height = 50 }
         };
         var anchorage = new Anchorage { Width = 500, Height = 500 };
 
@@ -79,8 +79,8 @@ public class PositionServiceTests
     {
         var vessels = new List<Vessel>
         {
-            new Vessel { PositionX = 50, PositionY = 100, Width = 50, Height = 50 },
-            new Vessel { PositionX = 600, PositionY = 150, Width = 50, Height = 50 }
+            new Vessel { PositionX = 50, PositionY = 200, Width = 50, Height = 50 },
+            new Vessel { PositionX = 600, PositionY = 250, Width = 50, Height = 50 }
         };
         var anchorage = new Anchorage { Width = 500, Height = 500 };
 
@@ -92,7 +92,7 @@ public class PositionServiceTests
     [Fact]
     public void IsInAnchorage_ShouldHandleRotatedVessel()
     {
-        var vessel = new Vessel { PositionX = 100, PositionY = 150, Width = 100, Height = 50, Rotation = 90 };
+        var vessel = new Vessel { PositionX = 100, PositionY = 250, Width = 100, Height = 50, Rotation = 90 };
         var anchorage = new Anchorage { Width = 500, Height = 500 };
 
         var result = _positionService.IsInAnchorage(vessel, anchorage);

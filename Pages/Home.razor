@@ -7,6 +7,7 @@
 @inject IPositionService PositionService
 @inject IVesselLayoutService VesselLayoutService
 @inject IRotationService RotationService
+@inject IVesselTrackingService VesselTrackingService
 @inject IApiService ApiService
 
 <PageTitle>Bin packing problem</PageTitle>
@@ -61,6 +62,8 @@ Therefore the first element has to handle it. *@
             </ul>
         </div>
         
+        <VesselTracker TrackingInfo="VesselTrackingService.GetTrackingInfo()" />
+        
         <SuccessMessage IsVisible="anchorageFull" />
     }
 </div>
@@ -103,6 +106,10 @@ private const int RotationDebounceMs = 300;
 
             // Delegate vessel layout to the VesselLayoutService
             Vessels = VesselLayoutService.GenerateVesselLayout(response.fleets, anchorageWidth);
+            
+            // Initialize vessel tracking
+            VesselTrackingService.Initialize(response.fleets);
+            UpdateTracking();
         }
         catch (Exception ex)
         {
@@ -123,6 +130,13 @@ private void OnDragEnd(IEnumerable<Vessel> allVessels) {
     
     var anchorage = new Anchorage { Width = anchorageWidth, Height = anchorageHeight };
     anchorageFull = PositionService.AllVesselsInAnchorage(allVessels, anchorage);
+    
+    UpdateTracking();
+}
+
+private void UpdateTracking() {
+    var anchorage = new Anchorage { Width = anchorageWidth, Height = anchorageHeight };
+    VesselTrackingService.UpdateTracking(Vessels ?? new List<Vessel>(), anchorage, PositionService);
 }
 
 private async Task GenerateNewVessels() {

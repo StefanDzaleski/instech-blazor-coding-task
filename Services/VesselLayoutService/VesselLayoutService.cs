@@ -68,7 +68,8 @@ public class VesselLayoutService : IVesselLayoutService
                     Width = vesselWidth,
                     Height = vesselHeight,
                     PositionX = columnXPosition,
-                    PositionY = columnYOffsets[currentColumn]
+                    PositionY = columnYOffsets[currentColumn],
+                    ShipDesignation = fleet.shipDesignation
                 });
 
                 columnYOffsets[currentColumn] += vesselHeight + VesselSpacing;

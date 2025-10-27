@@ -20,6 +20,8 @@ public class Vessel
     public double PreviousPositionY { get; set; }
 
     public double Rotation { get; set; }
+
+    public string? ShipDesignation { get; set; }
 }
 
 public class Fleet

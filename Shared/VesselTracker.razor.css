@@ -1,0 +1,68 @@
+.vessel-tracker {
+    position: fixed;
+    right: 2rem;
+    top: 150px;
+    width: 220px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.tracker-header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.tracker-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.tracker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tracker-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.tracker-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4a5568;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0.5rem;
+}
+
+.tracker-count {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #667eea;
+    flex-shrink: 0;
+}
+
+.tracker-empty {
+    text-align: center;
+    color: #a0aec0;
+    font-size: 0.9rem;
+    padding: 1rem;
+}
+
+@media (max-width: 1400px) {
+    .vessel-tracker {
+        position: static;
+        width: 100%;
+        margin: 2rem;
+    }
+}
+

@@ -1,0 +1,29 @@
+@* Component for displaying vessel placement tracking *@
+
+<div class="vessel-tracker">
+    <div class="tracker-header">
+        <h3>Vessel Progress</h3>
+    </div>
+    <div class="tracker-list">
+        @if (TrackingInfo != null && TrackingInfo.Any())
+        {
+            @foreach (var (designation, (placed, total)) in TrackingInfo.OrderBy(x => x.Key))
+            {
+                <div class="tracker-item">
+                    <div class="tracker-label">@designation</div>
+                    <div class="tracker-count">@placed / @total</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="tracker-empty">No vessels loaded</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<string, (int placed, int total)>? TrackingInfo { get; set; }
+}
+

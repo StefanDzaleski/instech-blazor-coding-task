@@ -78,10 +78,6 @@ public class PositionService : IPositionService
     /// <param name="selectedVessel">The vessel to check</param>
     /// <param name="anchorage">The anchorage dimensions</param>
     /// <returns>True if the vessel is fully inside the anchorage, else false</returns>
-    /// <remarks>
-    /// The anchorage position is fixed on the page:
-    /// - X offset: 32px (left padding)
-    /// - Y offset: 82px (top padding + header height)
     /// </remarks>
     public bool IsInAnchorage(Vessel selectedVessel, Anchorage anchorage)
     {
