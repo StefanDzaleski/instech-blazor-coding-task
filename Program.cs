@@ -1,4 +1,4 @@
-using instech_blazor_coding_task.Components;
+using instech_blazor_coding_task;
 using instech_blazor_coding_task.Services;
 
 var builder = WebApplication.CreateBuilder(args);
